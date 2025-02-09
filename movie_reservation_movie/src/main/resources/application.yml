@@ -1,0 +1,21 @@
+spring:
+  application:
+    name: movie-server
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    username: root
+    password: Group0000-
+    url: jdbc:mysql://localhost:3306/movieapp
+  jpa:
+    hibernate:
+      ddl-auto: update
+server:
+  port: 19093
+eureka:
+  client:
+    fetch-registry: true
+    register-with-eureka: true
+    service-url:
+      defaultZone : http://localhost:19090/eureka/
+  instance:
+    prefer-ip-address: true
