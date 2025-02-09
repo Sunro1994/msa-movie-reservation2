@@ -1,0 +1,45 @@
+server:
+  port: 19080  # 서버가 실행될 포트 번호 설정
+
+spring:
+  main:
+    web-application-type: reactive  # Spring 애플리케이션을 리액티브(비동기) 방식으로 실행
+  application:
+    name: gateway-service  # 애플리케이션의 이름을 'gateway-service'로 설정
+  cloud:
+    gateway:
+      routes:  # Spring Cloud Gateway의 라우팅 설정
+        - id: user-service  # 사용자 서비스 라우트 ID
+          uri: lb://user-service  # 'user-service'로 요청을 로드 밸런싱하여 전달
+          predicates:
+            - Path=/users/**  # /users/** 경로로 들어오는 요청을 user-service로 라우팅
+        - id: auth-service  # 인증 서비스 라우트 ID
+          uri: lb://auth-service  # 'auth-service'로 요청을 로드 밸런싱하여 전달
+          predicates:
+            - Path=/auth/**  # /auth/** 경로로 들어오는 요청을 auth-service로 라우팅
+        - id: movie-server  # 영화 서비스 라우트 ID
+          uri: lb://movie-server  # 'movie-server'로 요청을 로드 밸런싱하여 전달
+          predicates:
+            - Path=/movie/**  # /movie/** 경로로 들어오는 요청을 movie-server로 라우팅
+      discovery:
+        locator:
+          enabled: true  # Eureka 서비스 등록 시 자동으로 인식하여 라우트 설정
+
+service:
+  jwt:
+    secret-key: "401b09eab3c013d4ca54922bb802bec8fd5318192b0a75f201d8b3727429080fb337591abd3e44453b954555b7a0812e1081c39b740293f765eae731f5a65ed1"
+    # JWT 인증에 사용할 비밀 키
+
+eureka:
+  instance:
+    prefer-ip-address: true  # 서비스 등록 시 호스트명이 아닌 IP 주소를 우선 사용
+  client:
+    service-url:
+      defaultZone: http://localhost:19090/eureka/  # Eureka 서버의 기본 URL
+    register-with-eureka: true  # 해당 서비스(gateway-service)를 Eureka에 등록
+    fetch-registry: true  # Eureka에서 다른 서비스 목록을 가져옴
+
+logging:
+  level:
+    org.springframework.cloud.gateway: INFO  # Spring Cloud Gateway의 로깅 레벨 설정
+    com.sparta.cloud.movie_reservation_gateway: INFO  # 커스텀 패키지의 로깅 레벨 설정
